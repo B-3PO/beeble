@@ -1,0 +1,74 @@
+@import '../../../core/style/theme';
+
+@mixin mc-button-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  .mc-button, .mc-button-raised {
+    &.mc-button-focus {
+      @include _mc-button-focus-color($theme);
+    }
+  }
+
+  .mc-button {
+    @include _mc-button-theme-color($theme, 'color');
+    background: transparent;
+
+    &:hover {
+      @include _mc-button-focus-color($theme);
+    }
+  }
+
+  .mc-button-raised {
+    @include _mc-button-theme-color($theme, 'color', default-contrast);
+    @include _mc-button-theme-color($theme, 'background-color');
+    background-color: mc-color($background, raised-button);
+  }
+}
+
+
+@mixin _mc-button-theme-color($theme, $property, $color: 'default') {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  &.mc-primary {
+    #{$property}: mc-color($primary, $color);
+  }
+  &.mc-accent {
+    #{$property}: mc-color($accent, $color);
+  }
+  &.mc-warn {
+    #{$property}: mc-color($warn, $color);
+  }
+
+  &.mc-primary, &.mc-accent, &.mc-warn, &[disabled] {
+    &[disabled] {
+      $palette: if($property == 'color', $foreground, $background);
+      #{$property}: mc-color($palette, disabled-button);
+    }
+  }
+}
+
+@mixin _mc-button-focus-color($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+
+  &.mc-primary {
+    background-color: mc-color($primary, 0.12);
+  }
+
+  &.mc-accent {
+    background-color: mc-color($accent, 0.12);
+  }
+
+  &.mc-warn {
+    background-color: mc-color($warn, 0.12);
+  }
+}

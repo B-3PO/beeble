@@ -1,0 +1,9 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic);
+
+@function rem($multiplier) {
+  $font-size: 10px;
+  @return $multiplier * $font-size;
+}
+
+$mc-global-font-size: rem(1.4) !default;
+$mc-global-font-family: Roboto, 'Helvetica Neue', sans-serif !default;

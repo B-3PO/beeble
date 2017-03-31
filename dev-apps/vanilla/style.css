@@ -1,0 +1,15 @@
+section {
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #EEE;
+  border-radius: 2px;
+}
+
+section:last-child {
+  margin-bottom: 0;
+}
+
+section h4 {
+  margin-top: 0px;
+  color: #666;
+}

@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <title>Material Components</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="/gsap/src/minified/plugins/CSSPlugin.min.js"></script>
+    <script src="/gsap/src/minified/easing/EasePack.min.js"></script>
+    <script src="/gsap/src/minified/TweenLite.min.js"></script>
+
+    <!-- inject:css -->
+    <link rel="stylesheet" href="../core/style/main.css">
+    <link rel="stylesheet" href="../components/button/style/button.css">
+    <link rel="stylesheet" href="../core/style/themes/deep-purple.css">
+    <link rel="stylesheet" href="../core/style/themes/indigo-pink-theme.css">
+    <!-- endinject -->
+    <!-- inject:js -->
+    <script src="../template-strings/compile.js"></script>
+    <script src="../template-strings/index.js"></script>
+    <script src="../template-strings/resolve-to-string.js"></script>
+    <script src="../index.js"></script>
+    <!-- endinject -->
+    <script src="app.js"></script>
+  </head>
+
+  <body controller="AppController">
+    <section>
+      <h4>binding expression</h4>
+      ${'bound name: ' + name}
+    </section>
+
+    <section>
+      <h4>if</h4>
+      <div if="${showit}">
+        hello
+      </div>
+    </section>
+
+    <section>
+      <h4>Button</h4>
+      <mc-button class="mc-primary">${name}</mc-button>
+    </section>
+
+    <section>
+      <h4>For</h4>
+      <div for="item of list">
+        <mc-button class="mc-primary">${item.name}</mc-button>
+      </div>
+    </section>
+  </body>
+
+</html>

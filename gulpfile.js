@@ -38,7 +38,7 @@ gulp.task('build:dev:inject', function () {
 
 gulp.task('nodemon', function () {
   return nodemon({
-    script: 'testApps/server.js',
+    script: paths.testApps.root + 'server.js',
     ignore: ['src/', 'src_old/', 'gulp/', 'bower_components/', 'testApps']
   });
 });

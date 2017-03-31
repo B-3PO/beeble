@@ -1,7 +1,7 @@
 var srcPath = 'src/';
 var distPath = 'dist/';
 var devPath = 'dev/';
-var testApps = 'testApps/';
+var testApps = 'dev-apps/';
 
 
 exports.names = {
@@ -12,6 +12,9 @@ exports.names = {
 
 exports.paths = {
   src: srcPath,
+  testApps: {
+    root: testApps
+  },
   dist: {
     root: distPath
   },

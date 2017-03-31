@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>material-components</title>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <!-- inject:css -->
+    <link rel="stylesheet" href="../core/style/main.css">
+    <link rel="stylesheet" href="../components/button/style/button.css">
+    <link rel="stylesheet" href="../core/style/themes/deep-purple.css">
+    <link rel="stylesheet" href="../core/style/themes/indigo-pink-theme.css">
+    <!-- endinject -->
+
+    <script src="/angular/angular.js"></script>
+    <!-- <script src="/angular-animate/angular-animate.js"></script> -->
+    <!-- <script src="/angular-messages/angular-messages.js"></script> -->
+    <script src="/angular-route/angular-route.js"></script>
+    <script src="/angular-sanitize/angular-sanitize.js"></script>
+
+    <!-- inject:js -->
+    <script src="../index.js"></script>
+    <script src="../template-strings/compile.js"></script>
+    <script src="../template-strings/index.js"></script>
+    <script src="../template-strings/resolve-to-string.js"></script>
+    <!-- endinject -->
+    <!-- <script src="/material-component-angular-1.x.js"></script> -->
+
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+    <script src="/angular-1.x/app.js"></script>
+    <script src="/angular-1.x/controller.js"></script>
+  </head>
+  <body ng-app="testApp" ng-controller="HomeController">
+    <section>
+      <h4>binding expression</h4>
+      {{'bound name: ' + name}}
+    </section>
+
+    <section>
+      <h4>if</h4>
+      <div ng-if="showit">
+        hello
+      </div>
+    </section>
+
+    <section>
+      <h4>Button</h4>
+      <md-button class="md-primary">{{name}}</md-button>
+    </section>
+
+    <div ng-repeat="item in list">
+      <md-button md-no-ink>{{item.name}}</md-button>
+    </div>
+  </body>
+</html>

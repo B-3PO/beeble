@@ -1,0 +1,47 @@
+@import '../../../core/style/variables';
+@import 'button-variables';
+@import 'button-theme';
+
+.mc-button {
+  box-sizing: border-box;
+  position: relative;
+
+  // browser defaults.
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  border: none;
+
+  // Make anchors render like buttons.
+  display: inline-block;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: baseline;
+
+  // font.
+  font-size: $mc-global-font-size;
+  font-family: $mc-global-font-family;
+  font-weight: 500;
+  color: currentColor;
+  text-align: center;
+
+  // Sizing.
+  margin: $mc-button-margin;
+  min-width: $mc-button-min-width;
+  line-height: $mc-button-line-height;
+  padding: $mc-button-padding;
+  border-radius: $mc-button-border-radius;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+  }
+
+  &[disabled] {
+  	cursor: not-allowed;
+  }
+}
