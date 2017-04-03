@@ -121,6 +121,7 @@ function compile() {
 }
 
 
+// TODO add better tracking to elements so we can reduce duplicate checks for parse/compile
 var observer;
 function observe() {
   if (!observer) {

@@ -13,7 +13,7 @@ function HomeController($scope, $timeout) {
     $scope.isDisabled = !$scope.isDisabled;
   };
 
-  $scope.list = getList();
+  $scope.list = getList(100);
 
   $timeout(function () {
     $scope.name = 'Ben Rubin 1';
@@ -44,10 +44,11 @@ function HomeController($scope, $timeout) {
 }
 
 
-function getList() {
+function getList(length) {
+  length = length || 100;
   var arr = [];
   var i = 0;
-  while (i < 10000) {
+  while (i < length) {
     arr.push({
       id: i,
       name: i+'_name'

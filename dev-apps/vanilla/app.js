@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 materialComponents.controller('AppController', function (model) {
   model.$assign('name', 'Ben Rubin');
   model.$assign('showit', false);
-  var list = getList();
+
+  var list = getList(100);
   model.$assign('list', list);
 
   setTimeout(function () {
@@ -40,10 +41,11 @@ materialComponents.controller('AppController', function (model) {
 });
 
 
-function getList() {
+function getList(length) {
+  length = length  || 100;
   var arr = [];
   var i = 0;
-  while (i < 10000) {
+  while (i < length) {
     arr.push({
       id: i,
       name: i+'_name'

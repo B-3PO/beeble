@@ -4,6 +4,9 @@ import DOM from '../dom';
 import buildAttrs from './attributes';
 import * as pipeline from '../pipeline';
 import {
+  register
+} from './registry';
+import {
     findController,
     bind as bindController
   } from '../controller';
@@ -40,13 +43,7 @@ export function bindElement(element, parentingElement, rootNode) {
   var component = find(element);
   if (!component) { return; }
   var uid = getElementUid(element);
-  return compileElement({
-    uid: element.uid,
-    component: component,
-    originalNode: element,
-    parentingElement: parentingElement,
-    rootNode: rootNode
-  });
+  return compileElement(component, element, parentingElement, rootNode);
 }
 
 export function bindAttribute(attr, element, parentingElement, rootNode) {
@@ -60,15 +57,17 @@ export function bindAttribute(attr, element, parentingElement, rootNode) {
 export function compileAttribute(attr, element, component, parentingElement, rootNode) {
   if (element && !element.uid) { return; }
   var selector = formatSelector(attr);
-  if (elements[attr.uid] && elements[attr.uid][selector]) { return elements[attr.uid][selector]; }
+  if (elements[attr.uid] && elements[attr.uid][selector]) { return elements[attr.uid][selector].compiler; }
   if (!component) { return; }
-  elements[element.uid] = elements[element.uid] || {};
+  var uid = element.uid;
+  elements[uid] = elements[uid] || {};
   if (component.compile) {
     component.compile(element);
   }
 
-  var fn = function () {
-    if (elements[element.uid][selector]) {
+  elements[uid][selector] = {};
+  elements[uid][selector].compiler = function () {
+    if (elements[uid][selector].compiled) {
       getElementModel(element).$$enable();
       return;
     }
@@ -81,105 +80,126 @@ export function compileAttribute(attr, element, component, parentingElement, roo
     else { model = CreateModel(); }
     bindModelToElement(element, model);
     if (component.controller) {
-      bindController(element, component.controller, { model: model, element: element, attrs: buildAttrs(component.attrs, element)})();
+      elements[uid][selector].controller = bindController(element, component.controller, { model: model, element: element, attrs: buildAttrs(component.attrs, element)})();
     }
-    elements[element.uid][selector] = fn;
+
+    elements[uid][selector].uid = uid;
+    elements[uid][selector].element = element;
+    elements[uid][selector].model = model;
+    elements[uid][selector].attr = attr;
+    elements[uid][selector].compiled = true;
   };
-  fn.priority = component.priority || 0;
-  fn.$element = element;
-  return fn;
+  elements[uid][selector].compiler.priority = component.priority || 0;
+  elements[uid][selector].compiler.$element = element;
+  return elements[uid][selector].compiler;
 }
 
-export function compileElement(options) {
-  if (!options || !options.uid) { return; }
+export function compileElement(component, originalNode, parentingElement, rootNode) {
+  if (!originalNode || !originalNode.uid) { return; }
   var selector;
-  if (options.nodeType === NODE_TYPES.ELEMENT_NODE) {
-    selector = formatSelector(options);
-    if (elements[options.uid] && elements[options.uid][selector]) { return elements[options.uid][selector]; }
-    return;
-  }
-  selector = formatSelector(options.originalNode);
-  if (elements[options.uid] && elements[options.uid][selector]) { return elements[options.uid][selector]; }
+  var node;
+  var model;
+  var uid = originalNode.uid;
 
-  elements[options.uid] = elements[options.uid] || {};
+  // if (node && node.nodeType === NODE_TYPES.ELEMENT_NODE) {
+  //   selector = formatSelector(options);
+  //   if (elements[uid] && elements[uid][selector]) { return elements[uid][selector]; }
+  //   return;
+  // }
+  selector = formatSelector(originalNode);
+  if (elements[uid] && elements[uid][selector]) { return elements[uid][selector].compiler; }
+
+  elements[uid] = elements[uid] || {};
   var frag = document.createDocumentFragment(); // component fragment
-  options.originalNode.originalNode = true;
-  options.node = frag;
-  if (options.component.compile) {
-    options.component.compile(options.originalNode);
+  originalNode.originalNode = true;
+  node = frag;
+  if (component.compile) {
+    component.compile(originalNode);
   }
 
-  var fn = function () {
-    if (elements[options.uid][selector]) {
-      if (options.model) { options.model.$$enable(); }
+  elements[uid][selector] = {};
+  elements[uid][selector].compiler = function () {
+    if (elements[uid][selector].compiled) {
+      if (elements[uid][selector].model) { elements[uid][selector].model.$$enable(); }
       return;
     }
-    options.rootNode = options.rootNode || document.body;
-    if (!options.rootNode.contains(options.originalNode)) { return; }
+    rootNode = rootNode || document.body;
+    if (!rootNode.contains(originalNode)) { return; }
     // model
     var model;
-    var parentModel = getElementModel(options.parentingElement);
-    if (options.component.model) { model = CreateModel(); }
+    var parentModel = getElementModel(parentingElement);
+    if (component.model) { model = CreateModel(); }
     else if (parentModel) { model = parentModel.$$copy(); }
     else { model = CreateModel(); }
-    bindModelToElement(options.originalNode, model);
+    bindModelToElement(originalNode, model);
 
 
     // Tempalte
-    if (options.component.template) {
-      options.node.appendChild(compileTemplate(options.originalNode, options.component));
+    if (component.template) {
+      node.appendChild(compileTemplate(originalNode, component));
     } else {
-      options.node.appendChild(options.originalNode.cloneNode());
+      node.appendChild(originalNode.cloneNode());
       var child;
-      while (child = options.originalNode.firstChild) {
-        options.node.firstChild.append(child);
+      while (child = originalNode.firstChild) {
+        node.firstChild.append(child);
       }
     }
 
     // replace original node and set component node
-    if (!options.component.template) {
-      var nodeCount = options.node.childNodes.length;
-      options.originalNode.parentNode.insertBefore(options.node, options.originalNode);
-      if (nodeCount === 1) { options.node = options.originalNode; }
+    if (!component.template) {
+      var nodeCount = node.childNodes.length;
+      originalNode.parentNode.insertBefore(node, originalNode);
+      if (nodeCount === 1) { node = originalNode; }
       else { // handle multiple root nodes
-        options.node = [];
-        var lastNode = options.originalNode;
+        node = [];
+        var lastNode = originalNode;
         while (nodeCount) {
           lastNode = lastNode.nextSibling;
-          options.node.push(lastNode)
+          node.push(lastNode)
           nodeCount--;
         }
       }
-      options.originalNode.remove();
+      originalNode.remove();
     } else {
-      var parent = options.originalNode.parentNode;
-      options.originalNode.parentNode.insertBefore(options.node, options.originalNode);
-      options.node = options.originalNode.previousSibling;
-      options.originalNode.remove();
+      var parent = originalNode.parentNode;
+      originalNode.parentNode.insertBefore(node, originalNode);
+      node = originalNode.previousSibling;
+      originalNode.remove();
     }
-    options.node.uid = options.uid;
+    node.uid = uid;
 
-    var nodes = [].concat(options.node);
+    var nodes = [].concat(node);
     nodes.forEach(function (sub) {
       // sub.classList.remove('mc-cloak');
       // if selector is the node name then add it as a classname
-      if (options.component.selector === sub.nodeName.toLowerCase()) {
-        sub.classList.add(options.node.nodeName.toLowerCase());
+      if (component.selector === sub.nodeName.toLowerCase()) {
+        sub.classList.add(node.nodeName.toLowerCase());
       }
     });
 
-    if (options.component.controller) {
-      options.attrs = buildAttrs(options.component.attrs, options.node);
-      options.controller = bindController(options.node, options.component.controller, { model: model, element: options.node, attrs: options.attrs})();
+    if (component.controller) {
+      var attrs = buildAttrs(component.attrs, node);
+      elements[uid][selector].controller = bindController(node, component.controller, { model: model, element: node, attrs: attrs})();
+      elements[uid][selector].attrs = attrs;
     }
+
+    elements[uid][selector].uid = uid;
+    elements[uid][selector].element = node;
+    elements[uid][selector].model = model;
+    elements[uid][selector].compiled = true;
+    register(node, elements[uid][selector]);
+
+
+    // parse if template used.
+    // since the html changes at this point we have not parsed it yet
+    // if (component.template) { parse(component.node); }
 
     // if ((linker.node[0] || linker.node).getAttribute('register')) { register(linker); }
     // pipeline.postCompile(options);
-    elements[options.uid][selector] = fn;
   };
-  fn.priority = options.component.priority || 0;
-  fn.$element = options.node;
-  return fn;
+  elements[uid][selector].compiler.priority = component.priority || 0;
+  elements[uid][selector].compiler.$element = node;
+  return elements[uid][selector].compiler;
 }
 
 export function find(node) {
@@ -211,7 +231,7 @@ export function disable(node) {
   if (!node.uid) { return; }
   var component = elements[node.uid];
   if (!component) { return; }
-  var model = getElementModel(component.$element);
+  var model = getElementModel(component.element);
   if (model) { model.$$disable(); }
   // TODO disable event listeners
   // TODO dispatch disable event
@@ -327,3 +347,20 @@ function validateOptions(options) {
     throw Error('`options.template must be a valid string`');
   }
 }
+
+
+// export function clone(node) {
+//   var component = elements[node.uid];
+//   if (!component) { return; }
+//
+//   var clone = component.element.clone(true);
+//   console.log(clone);
+//   // elements[uid][selector].uid = uid;
+//   // elements[uid][selector].element = node;
+//   // elements[uid][selector].model = model;
+//   // elements[uid][selector].compiled = true;
+//   //
+//   // function () {
+//   //   if (elements[uid][selector].model) { elements[uid][selector].model.$$enable(); }
+//   // }
+// }

@@ -58,14 +58,11 @@ function controller(element, attrs, model) {
 
     if (newElements.length) {
       var nextSibling = tempList.length ? tempList[tempList.length-1].nextSibling : placeholder.nextSibling;
-      addSection(newElements, nextSibling)
+      // addSection(newElements, nextSibling);
 
-      // setTimeout(function () {
-      //   var frag = domFragmentFromElements(newElements);
-      //   parse(frag);
-      //   parse(frag);
-      //   parent.insertBefore(frag, nextSibling);
-      // }, 0);
+      var frag = domFragmentFromElements(newElements);
+      parse(frag);
+      parent.insertBefore(frag, nextSibling);
     }
 
     list = clone(value);
@@ -78,7 +75,6 @@ function controller(element, attrs, model) {
 
     setTimeout(function () {
       var frag = domFragmentFromElements(sectionArr);
-      parse(frag);
       parse(frag);
       parent.insertBefore(frag, nextSibling);
       addSection(arr, sectionArr[sectionArr.length-1].nextSibling);
