@@ -11,6 +11,7 @@
     <!-- inject:css -->
     <link rel="stylesheet" href="../core/style/main.css">
     <link rel="stylesheet" href="../components/button/style/button.css">
+    <link rel="stylesheet" href="../components/expander/style/expander.css">
     <link rel="stylesheet" href="../core/style/themes/deep-purple.css">
     <link rel="stylesheet" href="../core/style/themes/indigo-pink-theme.css">
     <!-- endinject -->
@@ -27,6 +28,27 @@
     <section>
       <h4>binding expression</h4>
       ${'bound name: ' + name}
+    </section>
+
+    <section>
+      <h4>Expander</h4>
+      <mc-expander style="width: 300px">
+
+        <mc-expander-header>
+          <div class="mc-title">Header</div>
+          <mc-expander-arrow></mc-expander-arrow>
+        </mc-expander-header>
+
+        <mc-expander-expanded>
+          <div class="mc-content">
+            <p>Hello</p>
+            <p>Hello</p>
+            <p>Hello</p>
+            <p>Hello</p>
+          </div>
+        </mc-expander-expanded>
+
+      </mc-expander>
     </section>
 
     <section>

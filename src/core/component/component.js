@@ -3,6 +3,7 @@ import { getElementUid } from '../util';
 import DOM from '../dom';
 import buildAttrs from './attributes';
 import * as pipeline from '../pipeline';
+import ComponentHelper from './components-helper';
 import {
   register
 } from './registry';
@@ -137,35 +138,30 @@ export function compileElement(component, originalNode, parentingElement, rootNo
     // Tempalte
     if (component.template) {
       node.appendChild(compileTemplate(originalNode, component));
+      var parent = originalNode.parentNode;
+      originalNode.parentNode.insertBefore(node, originalNode);
+      node = originalNode.previousSibling;
     } else {
       node.appendChild(originalNode.cloneNode());
       var child;
       while (child = originalNode.firstChild) {
         node.firstChild.append(child);
       }
-    }
-
-    // replace original node and set component node
-    if (!component.template) {
-      var nodeCount = node.childNodes.length;
-      originalNode.parentNode.insertBefore(node, originalNode);
-      if (nodeCount === 1) { node = originalNode; }
-      else { // handle multiple root nodes
-        node = [];
-        var lastNode = originalNode;
-        while (nodeCount) {
-          lastNode = lastNode.nextSibling;
-          node.push(lastNode)
-          nodeCount--;
-        }
-      }
-      originalNode.remove();
-    } else {
-      var parent = originalNode.parentNode;
       originalNode.parentNode.insertBefore(node, originalNode);
       node = originalNode.previousSibling;
-      originalNode.remove();
+      var nodeCount = node.childNodes.length;
+      // if (nodeCount === 1) { node = originalNode; }
+      // else { // handle multiple root nodes
+      //   node = [];
+      //   var lastNode = originalNode;
+      //   while (nodeCount) {
+      //     lastNode = lastNode.nextSibling;
+      //     node.push(lastNode)
+      //     nodeCount--;
+      //   }
+      // }
     }
+    originalNode.remove();
     node.uid = uid;
 
     var nodes = [].concat(node);
@@ -179,7 +175,7 @@ export function compileElement(component, originalNode, parentingElement, rootNo
 
     if (component.controller) {
       var attrs = buildAttrs(component.attrs, node);
-      elements[uid][selector].controller = bindController(node, component.controller, { model: model, element: node, attrs: attrs})();
+      elements[uid][selector].controller = bindController(node, component.controller, { model: model, element: node, attrs: attrs, helper: ComponentHelper(elements, uid, selector)})();
       elements[uid][selector].attrs = attrs;
     }
 

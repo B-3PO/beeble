@@ -1,0 +1,74 @@
+@import '../../../core/style/variables';
+
+.mc-expander {
+  display: block;
+  outline: none;
+  border: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+  }
+
+  &[disabled] {
+  	cursor: not-allowed;
+  }
+
+
+  .mc-expander-header {
+    display: flex;
+    box-sizing: border-box;
+    cursor: pointer;
+
+    // Flex
+    display: flex;
+    align-items: center;
+
+    // Size
+    // min-height: 48px;
+    // line-height: 48px;
+    padding: 0 24px;
+
+    .mc-title {
+      // font
+      font-size: rem(1.6);
+      font-family: $mc-global-font-family;
+      font-weight: 500;
+      color: currentColor;
+
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .mc-expander-arrow {
+      transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      transform: rotate(90deg);
+    }
+  }
+
+  &.mc-open .mc-expander-header .mc-expander-arrow {
+    transform: rotate(-90deg);
+  }
+
+  .mc-expander-expanded {
+    display: none;
+    height: 0;
+    overflow: hidden;
+
+    &.mc-show {
+      display: block;
+    }
+
+    .mc-content {
+      display: block;
+      padding: 16px 24px;
+    }
+  }
+}
